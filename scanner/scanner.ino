@@ -4,7 +4,7 @@ Servo bottomservo;  // create servo object to control a servo
 Servo topservo;
 
 // variables to store the servo positions/sensor value & pin
-int bottompos = 90;    // 100 left, 60 right 90 d
+int bottompos = 90;    // 120 left, 60 right 90 d
 int toppos = 55; // 20 top, 80 bottom 55 d
 const int BOTTOM_ZERO = 90;
 const int TOP_ZERO = 55;
@@ -42,7 +42,7 @@ void loop() {
 }
 
 void scan_sequence() {
-  for (bottompos = 60; bottompos <= 100; bottompos += 1) {
+  for (bottompos = 60; bottompos <= 120; bottompos += 1) {
     bottomservo.write(bottompos);
     delay(150);
     for (toppos = 20; toppos <= 80; toppos += 1) {
