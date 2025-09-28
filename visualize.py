@@ -125,11 +125,11 @@ def main():
     minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
     minion.begin_program()
     minion.write_data()
-    # calibration_plot()
+    calibration_plot()
     error_plot()
-    # calibrate_data()
-    # flatten_data()
-    # scan_2d_plot()
+    calibrate_data()
+    flatten_data()
+    scan_2d_plot()
 
 
 if __name__ == "__main__":
