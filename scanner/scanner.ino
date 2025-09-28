@@ -48,7 +48,7 @@ void scan_sequence() {
     for (toppos = 20; toppos <= 80; toppos += 1) {
       topservo.write(toppos);
       delay(15);
-      if (analogRead(sensorPin) >= MIN_SENSOR && analogRead(sensorPin) <= MIN_SENSOR) {
+      if (analogRead(sensorPin) >= MAX_SENSOR && analogRead(sensorPin) <= MIN_SENSOR) {
         Serial.print(analogRead(sensorPin));
         Serial.print(" ");
         Serial.print(toppos - TOP_ZERO);
