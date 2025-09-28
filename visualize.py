@@ -27,14 +27,12 @@ class scanMan:
                 serial_data = serial_data.strip("b'")
                 serial_data = serial_data.strip("\r\n'")
 
-                print(serial_data)
                 if serial_data == "scan done":
                     self.scanning_flag = False
                     break
                 if serial_data != "":
                     line_data = serial_data.split()
                     csvwriter.writerow([line_data[0], line_data[1], line_data[2]])
-        print("csv written")
 
 
 def calibrate_data(csv_path="scanner_data.csv"):
@@ -48,9 +46,9 @@ def calibrate_data(csv_path="scanner_data.csv"):
         with open("calibrated_scanner_data.csv", "w", newline="") as calib_data:
             writer = csv.writer(calib_data, delimiter=",")
             for row in reader:
-                scan_v = int(row[0]) / 1024 * REF_VOLT
+                scan_v = (int(row[0]) / 1024) * REF_VOLT
                 if scan_v != 0:
-                    y = 1 / (23.3 * scan_v)
+                    y = 23.3 / scan_v
                     writer.writerow([y, row[1], row[2]])
 
 
@@ -67,9 +65,9 @@ def flatten_data(csv_path="calibrated_scanner_data.csv"):
                 dist = float(row[0])
                 top_ang = (int(row[1]) / 360) * 2 * np.pi  # convert toppos to rad
                 bot_ang = (int(row[2]) / 360) * 2 * np.pi  # convert botpos to rad
-                x = dist * float(np.cos(top_ang)) * float(np.sin(bot_ang))
+                x = -1 * dist * float(np.cos(top_ang)) * float(np.sin(bot_ang))
                 y = dist * float(np.cos(top_ang)) * float(np.cos(bot_ang))
-                z = dist * float(np.sin(top_ang))
+                z = -1 * dist * float(np.sin(top_ang))
                 writer.writerow([x, y, z])
 
 
@@ -91,21 +89,29 @@ def calibration_plot():
 
 def scan_2d_plot():
     """plots a 2d representation of the scan"""
-    print("plotting 2d representation")
-    df = pd.read_csv("cartesian_scanner_data.csv")
-    plt.scatter(df["x"], df["z"], marker="^")
-    plt.title("2D image")
-    plt.xlabel("x pos (in)")
-    plt.ylabel("y pos (in)")
-    plt.axes([0, 60, 0, 3])
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    data = pd.read_csv("cartesian_scanner_data.csv")
+    ax.scatter(
+        data["x"],
+        data["y"],
+        data["z"],
+        c=data["x"] ** 2 + data["z"] ** 2 + data["y"] ** 2,
+        cmap="plasma",
+    )
+    ax.set_xlabel("x pos (in)")
+    ax.set_ylabel("y pos (in)")
+    ax.set_zlabel("z pos (in)")
+    ax.axis("square")
     plt.savefig("2d_image.png")
+    plt.show()
 
 
 def main():
     """runs to program in it's entirety"""
-    # minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
-    # minion.begin_program()
-    # minion.write_data()
+    minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
+    minion.begin_program()
+    minion.write_data()
     # calibration_plot()
     calibrate_data()
     flatten_data()
