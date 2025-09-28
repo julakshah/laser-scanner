@@ -6,15 +6,26 @@ import pandas as pd
 
 
 class scanMan:
+    """A class that establishes a connection to an arduino through serial,
+    sends a run command, collects data, and stops collecting data upon a return
+    command."""
+
     def __init__(self, port_string):
+        """Establish instance variables
+
+        Variables:
+            self.arduino = the serial connection object to arduino
+            self.scanning_flag = a boolean to have continuous data collection"""
         self.arduino = self.get_arduino(port_string)
         self.scanning_flag = False
 
     def get_arduino(self, port_string):
+        """Create serial port connection to arduino"""
         arduino = serial.Serial(port=port_string, baudrate=9600, timeout=1)
         return arduino
 
     def begin_program(self):
+        """send the run command to the arduino"""
         self.scanning_flag = True
         self.arduino.write("run".encode("utf-8"))
 
@@ -121,7 +132,12 @@ def scan_2d_plot():
 
 
 def main():
-    """runs to program in it's entirety"""
+    """Reads the scan data coming from an arduino and plots an 2d image as well
+    as some error graphs.
+
+    Variables:
+        minion = A scanMan object to read the arduino data
+    """
     minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
     minion.begin_program()
     minion.write_data()
