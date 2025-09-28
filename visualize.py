@@ -2,6 +2,7 @@ import serial
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import pandas as pd
 
 
 class scanMan:
@@ -41,11 +42,26 @@ def flatten_data(csv_path="~/Documents/GitHub/laser-scanner/scanner_data"):
     print("flattening data")
 
 
+def plotting():
+    x = np.linspace(8, 59, 600)
+    y = 22 * np.power(x, -0.984)
+    df = pd.read_csv("calibration_data.csv")
+    plt.scatter(df["in"], df["voltage"], label="Calibration Data")
+    plt.plot(x, y, label="Fit Curve (22x^-0.984)", color="red")
+    plt.legend()
+    plt.title("Measured Voltage Out vs Actual Distance")
+    plt.xlabel("Actual Distance (in.)")
+    plt.ylabel("Measured Voltage Out (V)")
+    plt.axes([0, 60, 0, 3])
+    plt.savefig("calibration.png")
+
+
 def main():
     """runs to program in it's entirety"""
     minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
     minion.begin_program()
     minion.write_data()
+    plotting()
 
 
 if __name__ == "__main__":
