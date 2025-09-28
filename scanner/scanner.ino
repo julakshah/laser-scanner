@@ -8,6 +8,8 @@ int bottompos = 90;    // 100 left, 60 right 90 d
 int toppos = 55; // 20 top, 80 bottom 55 d
 const int BOTTOM_ZERO = 90;
 const int TOP_ZERO = 55;
+const int MAX_SENSOR = 217; // 22"
+const int MIN_SENSOR = 318; // 15"
 int sensorValue = 0;
 int sensorPin = A0;
 bool runFlag = false;
@@ -43,15 +45,17 @@ void scan_sequence() {
   for (bottompos = 60; bottompos <= 100; bottompos += 1) {
     bottomservo.write(bottompos);
     delay(150);
-    for (toppos = 20; toppos <= 80; toppos += 1){
+    for (toppos = 20; toppos <= 80; toppos += 1) {
       topservo.write(toppos);
       delay(15);
-      Serial.print(analogRead(sensorPin));
-      Serial.print(" ");
-      Serial.print(toppos - TOP_ZERO);
-      Serial.print(" ");
-      Serial.println(bottompos - BOTTOM_ZERO);
-      delay(2);
+      if (analogRead(sensorPin) >= MIN_SENSOR && analogRead(sensorPin) <= MIN_SENSOR) {
+        Serial.print(analogRead(sensorPin));
+        Serial.print(" ");
+        Serial.print(toppos - TOP_ZERO);
+        Serial.print(" ");
+        Serial.println(bottompos - BOTTOM_ZERO);
+        delay(2);
+      }
     }
   }
   Serial.println("scan done");
