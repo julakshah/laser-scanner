@@ -37,9 +37,38 @@ class scanMan:
         print("csv written")
 
 
-def flatten_data(csv_path="~/Documents/GitHub/laser-scanner/scanner_data"):
-    """converts to data from polar to cartesian coordinates"""
-    print("flattening data")
+def calibrate_data(csv_path="scanner_data.csv"):
+    """converts data from analog voltage readings to distance in meters
+
+    Constants:
+        REF_VOLT = the voltage range of the laser signal pin in volts"""
+    REF_VOLT = 5  # voltage
+    with open(csv_path, "r", newline="") as raw_data:
+        reader = csv.reader(raw_data, delimiter=",")
+        with open("calibrated_scanner_data", "w", newline="") as calib_data:
+            writer = csv.writer(calib_data, delimiter=",")
+            for row in reader:
+                scan_v = int(row[0]) / 1024 * REF_VOLT
+                y = (22 / scan_v) ^ (1 / 0.984)
+                writer.writerow([y, row[1], row[2]])
+
+
+def flatten_data(csv_path="calibrated_scanner_data.csv"):
+    """converts to data from polar to cartesian coordinates in inches"""
+
+    REF_VOLT = 5  # voltage
+    with open(csv_path, "r", newline="") as calib_data:
+        reader = csv.reader(calib_data, delimiter=",")
+        with open("cartesian_scanner_data", "w", newline="") as cart_data:
+            writer = csv.writer(calib_data, delimiter=",")
+            for row in reader:
+                dist = row[0]
+                top_ang = (row[1] / 360) * 2 * np.pi  # convert toppos to rad
+                bot_ang = (row[2] / 360) * 2 * np.pi  # convert botpos to rad
+                x = dist * np.cos(top_ang) * np.sin(bot_ang)
+                y = dist * np.cos(top_ang) * np.cos(bot_ang)
+                z = dist * np.sin(top_ang)
+                writer.writerow([x, y, z])
 
 
 def plotting():
@@ -58,10 +87,12 @@ def plotting():
 
 def main():
     """runs to program in it's entirety"""
-    minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
-    minion.begin_program()
-    minion.write_data()
+    # minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
+    # minion.begin_program()
+    # minion.write_data()
     plotting()
+    calibrate_data()
+    flatten_data()
 
 
 if __name__ == "__main__":
