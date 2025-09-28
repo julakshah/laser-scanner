@@ -49,8 +49,9 @@ def calibrate_data(csv_path="scanner_data.csv"):
             writer = csv.writer(calib_data, delimiter=",")
             for row in reader:
                 scan_v = int(row[0]) / 1024 * REF_VOLT
-                y = 1 / (23.3 * scan_v)
-                writer.writerow([y, row[1], row[2]])
+                if scan_v != 0:
+                    y = 1 / (23.3 * scan_v)
+                    writer.writerow([y, row[1], row[2]])
 
 
 def flatten_data(csv_path="calibrated_scanner_data.csv"):
@@ -91,11 +92,8 @@ def calibration_plot():
 def scan_2d_plot():
     """plots a 2d representation of the scan"""
     print("plotting 2d representation")
-    x = np.linspace(8, 59, 600)
-    y = 22 * np.power(x, -0.984)
     df = pd.read_csv("cartesian_scanner_data.csv")
-    print(df)
-    plt.scatter(df["x"], df["y"], label="2d scan")
+    plt.scatter(df["x"], df["z"], marker="^")
     plt.title("2D image")
     plt.xlabel("x pos (in)")
     plt.ylabel("y pos (in)")
@@ -105,9 +103,9 @@ def scan_2d_plot():
 
 def main():
     """runs to program in it's entirety"""
-    minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
-    minion.begin_program()
-    minion.write_data()
+    # minion = scanMan("/dev/cu.usbmodemB43A4536DECC2")
+    # minion.begin_program()
+    # minion.write_data()
     # calibration_plot()
     calibrate_data()
     flatten_data()
