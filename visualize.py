@@ -89,6 +89,19 @@ def calibration_plot():
     plt.savefig("calibration.png")
 
 
+def error_plot():
+    """plots a plot of the expected distance to the actual distance"""
+    df = pd.read_csv("error_data.csv")
+    plt.scatter(df["in"], df["voltage"], label="Measured Voltage")
+    plt.scatter(df["in"], df["Expected Voltage"], label="Expected Voltage")
+    plt.legend()
+    plt.title("Error Between Measured and Expected Distance")
+    plt.xlabel("Actual Distance (in.)")
+    plt.ylabel("Measured Voltage Out (V)")
+    plt.axes([0, 60, 0, 3])
+    plt.savefig("error.png")
+
+
 def scan_2d_plot():
     """plots a 2d representation of the scan"""
     print("plotting 2d representation")
@@ -107,9 +120,10 @@ def main():
     # minion.begin_program()
     # minion.write_data()
     # calibration_plot()
-    calibrate_data()
-    flatten_data()
-    scan_2d_plot()
+    error_plot()
+    # calibrate_data()
+    # flatten_data()
+    # scan_2d_plot()
 
 
 if __name__ == "__main__":
